@@ -3,8 +3,15 @@ from openpyxl import load_workbook
 from openpyxl.styles import Border, Side
 import glob
 import os
+import sys
 import win32com.client as win32
 import gc
+
+# プログラムの実行場所を取得
+if getattr(sys, "frozen", False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 cols = [
     "出荷日",
@@ -21,7 +28,7 @@ cols = [
 ]
 
 def read_csv_file():
-    csv_files = glob.glob("CSVフォルダ/*.csv")
+    csv_files = glob.glob(os.path.join(BASE_DIR, "CSVフォルダ", "*.csv"))
 
     if not csv_files:
         raise SystemExit("CSVフォルダ内にCSVファイルが見つかりません。")
@@ -54,7 +61,7 @@ df, latest_csv = read_csv_file()
 
 # 出力ファイル名を取得
 base_name = os.path.splitext(os.path.basename(latest_csv))[0]
-output_file = f"{base_name}.xlsx"
+output_file = os.path.join(BASE_DIR, f"{base_name}.xlsx")
 
 # 列名の前後にある空白を削除
 df.columns = df.columns.str.strip()
